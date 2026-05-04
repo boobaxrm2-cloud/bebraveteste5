@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BeBrave — Plataforma de Inglês</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<!-- ═══════════════════════════════ LOGIN ═══════════════════════════════ -->
+<div id="page-login" class="page active">
+  <div class="login-wrap">
+    <div class="login-left">
+      <div class="login-brand"><div class="brand-mark"></div><span class="brand-name">BeBrave</span></div>
+      <div class="login-copy">
+        <h1>Sua jornada para a <em>fluência</em> começa aqui.</h1>
+        <p>Plataforma exclusiva de aulas particulares de inglês. Acompanhe seu progresso, acesse materiais e gerencie suas aulas em um único lugar.</p>
+      </div>
+      <div class="login-deco"><div class="dc dc1"></div><div class="dc dc2"></div><div class="dc dc3"></div></div>
+    </div>
+    <div class="login-right">
+      <div class="login-card">
+        <div class="login-logo-mob"><div class="brand-mark sm"></div><span class="brand-name dark">BeBrave</span></div>
+        <h2>Entrar na plataforma</h2>
+        <p class="login-sub">Use sua matrícula ou login para acessar</p>
+        <div id="login-err" class="alert-err hidden"></div>
+        <div class="field-group"><label>Login / Matrícula</label><input id="li-login" type="text" placeholder="Ex: 100001 ou ADMIN" autocomplete="off"></div>
+        <div class="field-group">
+          <label>Senha</label>
+          <div class="pw-wrap"><input id="li-pass" type="password" placeholder="••••••••"><button type="button" class="pw-toggle" onclick="togglePw('li-pass',this)">👁</button></div>
+        </div>
+        <button class="btn-primary full" onclick="doLogin()">Entrar</button>
+        <p class="login-footer">Não tem acesso? Entre em contato com seu professor.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ ADMIN PAGE ══════════════════════════════ -->
+<div id="page-admin" class="page">
+  <div class="app-layout">
+    <aside class="sidebar" id="admin-sidebar">
+      <div class="sb-brand"><div class="brand-mark sm"></div><span class="brand-name dark">BeBrave</span></div>
+      <div class="sb-user">
+        <div class="avatar adm-av">AD</div>
+        <div><div class="u-name">Administrador</div><div class="u-role role-adm">Admin</div></div>
+      </div>
+      <nav class="sb-nav">
+        <a class="nav-item active" onclick="showAdmin('adm-overview',this)"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Visão Geral</a>
+        <a class="nav-item" onclick="showAdmin('adm-teachers',this)"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Professores</a>
+        <a class="nav-item" onclick="showAdmin('adm-students',this)"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Alunos</a>
+        <a class="nav-item" onclick="showAdmin('adm-passwords',this)"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Senhas</a>
+      </nav>
+      <button class="btn-logout" onclick="doLogout()"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sair</button>
+    </aside>
+    <main class="main-content">
+
+      <!-- Visão Geral Admin -->
+      <section id="adm-overview" class="cs active">
+        <div class="sh"><div><h2>Painel Administrativo</h2><p class="sub">Visão geral da plataforma</p></div></div>
+        <div class="stats-grid" id="adm-stats"></div>
+        <div class="card mt16">
+          <div class="ch"><h3>Professores cadastrados</h3><button class="btn-sm" onclick="showAdmin('adm-teachers', document.querySelector('#admin-sidebar .nav-item:nth-child(2)'))">Ver todos</button></div>
+          <div id="adm-teacher-cards" class="teacher-grid"></div>
+        </div>
+      </section>
+
+      <!-- Professores Admin -->
+      <section id="adm-teachers" class="cs">
+        <div class="sh"><div><h2>Professores</h2><p class="sub">Gerencie os professores da plataforma</p></div><button class="btn-primary" onclick="openModal('modal-add-teacher')">+ Novo Professor</button></div>
+        <div class="card"><div id="adm-teachers-list"></div></div>
+      </section>
+
+      <!-- Alunos Admin -->
+      <section id="adm-students" class="cs">
+        <div class="sh"><div><h2>Todos os Alunos</h2><p class="sub">Filtre por professor ou visualize alunos excluídos</p></div></div>
+        <div class="card"><div id="adm-students-list"></div></div>
+      </section>
+
+      <!-- Senhas Admin -->
+      <section id="adm-passwords" class="cs">
+        <div class="sh"><div><h2>Gerenciar Senhas</h2><p class="sub">Altere a senha de qualquer usuário</p></div></div>
+        <div class="card" style="max-width:500px">
+          <div class="ch"><h3>Redefinir Senha</h3></div>
+          <div class="field-group"><label>Login / Matrícula do usuário</label><input id="adm-reset-login" type="text" placeholder="Ex: CM1234 ou 100001"></div>
+          <div class="field-group"><label>Nova senha</label><input id="adm-reset-pw" type="text" placeholder="Mínimo 4 caracteres"></div>
+          <button class="btn-primary" onclick="adminResetPw()">Salvar nova senha</button>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ TEACHER PAGE ════════════════════════════ -->
+<div id="page-teacher" class="page">
+  <div class="app-layout">
+    <aside class="sidebar" id="teacher-sidebar">
+      <div class="sb-brand"><div class="brand-mark sm"></div><span class="brand-name dark">BeBrave</span></div>
+      <div class="sb-user">
+        <div class="avatar teach-av" id="t-avatar">?</div>
+        <div><div class="u-name" id="t-name">Professor</div><div class="u-role role-teach">Professor</div></div>
+      </div>
+      <nav class="sb-nav">
+        <a class="nav-item active" onclick="showTeacher('t-overview',this)"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Visão Geral</a>
+        <a class="nav-item" onclick="showTeacher('t-students',this)"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Meus Alunos</a>
+        <a class="nav-item" onclick="showTeacher('t-calendar',this)"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</a>
+        <a class="nav-item" onclick="showTeacher('t-files',this)"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>Materiais</a>
+        <a class="nav-item" onclick="showTeacher('t-certs',this)"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg>Certificados</a>
+      </nav>
+      <button class="btn-logout" onclick="doLogout()"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sair</button>
+    </aside>
+    <main class="main-content">
+
+      <!-- Overview -->
+      <section id="t-overview" class="cs active">
+        <div class="sh"><div><h2>Painel do Professor</h2><p class="sub">Bem-vindo de volta!</p></div><button class="btn-primary" onclick="openModal('modal-add-lesson')">+ Agendar Aula</button></div>
+        <div class="stats-grid" id="t-stats"></div>
+        <div class="card mt16">
+          <div class="ch"><h3>Meus Alunos</h3><button class="btn-sm" onclick="showTeacher('t-students',document.querySelector('#teacher-sidebar .nav-item:nth-child(2)'))">Ver todos</button></div>
+          <div id="t-student-cards" class="student-grid"></div>
+        </div>
+        <div class="card mt16">
+          <div class="ch"><h3>Próximas Aulas</h3></div>
+          <div id="t-upcoming"></div>
+        </div>
+      </section>
+
+      <!-- Alunos -->
+      <section id="t-students" class="cs">
+        <div class="sh"><div><h2>Meus Alunos</h2><p class="sub">Gerencie o progresso de cada aluno</p></div><button class="btn-primary" onclick="openModal('modal-add-student')">+ Cadastrar Aluno</button></div>
+        <div id="t-student-detail-list"></div>
+      </section>
+
+      <!-- Agenda -->
+      <section id="t-calendar" class="cs">
+        <div class="sh"><div><h2>Agenda</h2><p class="sub">Todas as suas aulas</p></div><button class="btn-primary" onclick="openModal('modal-add-lesson')">+ Agendar Aula</button></div>
+        <div class="cal-layout">
+          <div class="card cal-card">
+            <div class="cal-hd"><button onclick="changeMonthT(-1)">&#8249;</button><span id="cal-lbl-t"></span><button onclick="changeMonthT(1)">&#8250;</button></div>
+            <div class="cal-grid" id="cal-t"></div>
+          </div>
+          <div class="card"><div class="ch"><h3 id="cal-day-lbl-t">Selecione um dia</h3></div><div id="cal-events-t" class="day-events"><p class="empty">Clique em um dia para ver as aulas.</p></div></div>
+        </div>
+      </section>
+
+      <!-- Materiais -->
+      <section id="t-files" class="cs">
+        <div class="sh"><div><h2>Materiais</h2><p class="sub">Envie e receba arquivos dos alunos</p></div></div>
+        <div class="two-col">
+          <div class="card">
+            <div class="ch"><h3>📤 Enviar para Aluno</h3></div>
+            <div class="field-group"><label>Aluno</label><select id="t-file-student"><option value="">Selecione...</option></select></div>
+            <div class="upload-zone" onclick="document.getElementById('t-file-input').click()">
+              <svg viewBox="0 0 24 24" width="30" height="30"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <p>Clique para selecionar</p><span>PDF, DOC, MP3, MP4 até 50MB</span>
+              <input type="file" id="t-file-input" hidden onchange="uploadTeacherFile(event)">
+            </div>
+          </div>
+          <div class="card">
+            <div class="ch"><h3>📥 Recebidos dos Alunos</h3></div>
+            <div id="t-files-from-students"></div>
+          </div>
+        </div>
+        <div class="card mt16">
+          <div class="ch"><h3>📁 Arquivos Enviados</h3></div>
+          <div id="t-files-sent"></div>
+        </div>
+      </section>
+
+
+      <!-- Certificados (teacher) -->
+      <section id="t-certs" class="cs">
+        <div class="sh"><div><h2>Certificados</h2><p class="sub">Gere e gerencie certificados dos seus alunos</p></div><button class="btn-primary" onclick="openModal('modal-cert')">+ Gerar Certificado</button></div>
+        <div id="t-certs-list"></div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ STUDENT PAGE ════════════════════════════ -->
+<div id="page-student" class="page">
+  <div class="app-layout">
+    <aside class="sidebar" id="student-sidebar">
+      <div class="sb-brand"><div class="brand-mark sm"></div><span class="brand-name dark">BeBrave</span></div>
+      <div class="sb-user">
+        <div class="avatar stud-av" id="s-avatar">AL</div>
+        <div><div class="u-name" id="s-name">Aluno</div><div class="u-role role-stud">Aluno</div></div>
+      </div>
+      <nav class="sb-nav">
+        <a class="nav-item active" onclick="showStudent('s-dashboard',this)"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+        <a class="nav-item" onclick="showStudent('s-calendar',this)"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</a>
+        <a class="nav-item" onclick="showStudent('s-files',this)"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>Materiais</a>
+        <a class="nav-item" onclick="showStudent('s-progress',this)"><svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>Progresso</a>
+        <a class="nav-item" onclick="showStudent('s-certs',this)"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg>Certificados</a>
+      </nav>
+      <button class="btn-logout" onclick="doLogout()"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sair</button>
+    </aside>
+    <main class="main-content">
+
+      <!-- Dashboard -->
+      <section id="s-dashboard" class="cs active">
+        <div class="sh">
+          <div><h2>Olá, <span id="s-greet">Aluno</span>! 👋</h2><p class="sub">Aqui está seu resumo de aprendizado</p></div>
+          <div class="teacher-badge"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Professor: <strong id="s-teacher-name">—</strong></div>
+        </div>
+        <div class="stats-grid" id="s-stats"></div>
+        <div class="two-col mt16">
+          <div class="card">
+            <div class="ch"><h3>Próximas Aulas</h3><button class="btn-sm" onclick="showStudent('s-calendar',document.querySelector('#student-sidebar .nav-item:nth-child(2)'))">Ver agenda</button></div>
+            <div id="s-upcoming"></div>
+          </div>
+          <div class="card">
+            <div class="ch"><h3>Tópicos Estudados</h3></div>
+            <div id="s-topics"></div>
+          </div>
+        </div>
+        <div class="card mt16">
+          <div class="ch"><h3>Histórico de Aulas</h3></div>
+          <div class="tbl-wrap"><table class="dtbl" id="s-history"></table></div>
+        </div>
+      </section>
+
+      <!-- Agenda aluno -->
+      <section id="s-calendar" class="cs">
+        <div class="sh"><div><h2>Minha Agenda</h2><p class="sub">Aulas agendadas e realizadas</p></div></div>
+        <div class="cal-layout">
+          <div class="card cal-card">
+            <div class="cal-hd"><button onclick="changeMonthS(-1)">&#8249;</button><span id="cal-lbl-s"></span><button onclick="changeMonthS(1)">&#8250;</button></div>
+            <div class="cal-grid" id="cal-s"></div>
+          </div>
+          <div class="card"><div class="ch"><h3 id="cal-day-lbl-s">Selecione um dia</h3></div><div id="cal-events-s" class="day-events"><p class="empty">Clique em um dia para ver as aulas.</p></div></div>
+        </div>
+      </section>
+
+      <!-- Materiais aluno -->
+      <section id="s-files" class="cs">
+        <div class="sh"><div><h2>Materiais</h2><p class="sub">Arquivos do professor e seus envios</p></div></div>
+        <div class="two-col">
+          <div class="card">
+            <div class="ch"><h3>📥 Recebidos do Professor</h3></div>
+            <div id="s-files-received"></div>
+          </div>
+          <div class="card">
+            <div class="ch"><h3>📤 Meus Envios</h3></div>
+            <div id="s-files-sent"></div>
+            <div class="upload-zone mt16" onclick="document.getElementById('s-file-input').click()">
+              <svg viewBox="0 0 24 24" width="30" height="30"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <p>Enviar arquivo para o professor</p><span>PDF, DOC, MP3, MP4 até 50MB</span>
+              <input type="file" id="s-file-input" hidden onchange="uploadStudentFile(event)">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Progresso aluno -->
+      <section id="s-progress" class="cs">
+        <div class="sh"><div><h2>Meu Progresso</h2><p class="sub">Sua evolução ao longo do tempo</p></div></div>
+        <div class="two-col">
+          <div class="card">
+            <div class="ch"><h3>Nível de proficiência</h3></div>
+            <div class="level-track" id="s-level-track"></div>
+          </div>
+          <div class="card">
+            <div class="ch"><h3>Aulas por mês</h3></div>
+            <div class="bar-chart" id="s-monthly-chart"></div>
+          </div>
+        </div>
+        <div class="card mt16">
+          <div class="ch"><h3>Assuntos abordados</h3></div>
+          <div id="s-subjects-list"></div>
+        </div>
+        <div class="card mt16">
+          <div class="ch"><h3>Anotações do Professor</h3></div>
+          <div id="s-notes"></div>
+        </div>
+      </section>
+
+
+      <!-- Certificados (student) -->
+      <section id="s-certs" class="cs">
+        <div class="sh"><div><h2>Meus Certificados</h2><p class="sub">Certificados emitidos pelo seu professor</p></div></div>
+        <div id="s-certs-list"></div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- ═══════════════════════ MODAIS ════════════════════════════════ -->
+
+<!-- Add Teacher (admin) -->
+<div id="modal-add-teacher" class="modal-ov hidden" onclick="closeModalOv(event,'modal-add-teacher')">
+  <div class="modal-card">
+    <div class="mh"><h3>Cadastrar Novo Professor</h3><button class="mc-close" onclick="closeModal('modal-add-teacher')">✕</button></div>
+    <div class="field-group"><label>Nome completo *</label><input id="at-name" type="text" placeholder="Ex: Carlos Mendes"></div>
+    <div class="field-group"><label>E-mail (opcional)</label><input id="at-email" type="email" placeholder="professor@email.com"></div>
+    <p class="modal-info">O login será gerado automaticamente (iniciais + número). A senha padrão será <strong>1234</strong>.</p>
+    <div class="mf"><button class="btn-secondary" onclick="closeModal('modal-add-teacher')">Cancelar</button><button class="btn-primary" onclick="adminAddTeacher()">Cadastrar</button></div>
+  </div>
+</div>
+
+<!-- Add Student (teacher) -->
+<div id="modal-add-student" class="modal-ov hidden" onclick="closeModalOv(event,'modal-add-student')">
+  <div class="modal-card">
+    <div class="mh"><h3>Cadastrar Novo Aluno</h3><button class="mc-close" onclick="closeModal('modal-add-student')">✕</button></div>
+    <div class="field-group"><label>Nome completo *</label><input id="as-name" type="text" placeholder="Ex: Ana Lima"></div>
+    <div class="field-group"><label>Nível atual *</label>
+      <select id="as-level"><option value="A1">A1 — Iniciante</option><option value="A2">A2 — Básico</option><option value="B1">B1 — Intermediário</option><option value="B2" selected>B2 — Intermediário Avançado</option><option value="C1">C1 — Avançado</option><option value="C2">C2 — Proficiente</option></select>
+    </div>
+    <p class="modal-info">Será gerada uma <strong>matrícula de 6 dígitos</strong> automaticamente. A senha padrão será <strong>1234</strong>.</p>
+    <div class="mf"><button class="btn-secondary" onclick="closeModal('modal-add-student')">Cancelar</button><button class="btn-primary" onclick="teacherAddStudent()">Cadastrar</button></div>
+  </div>
+</div>
+
+<!-- Credential card shown after create -->
+<div id="modal-credential" class="modal-ov hidden" onclick="closeModalOv(event,'modal-credential')">
+  <div class="modal-card">
+    <div class="mh"><h3>✅ Cadastro realizado!</h3><button class="mc-close" onclick="closeModal('modal-credential')">✕</button></div>
+    <p style="margin-bottom:16px;color:var(--g500)">Guarde as credenciais de acesso abaixo:</p>
+    <div class="cred-box">
+      <div class="cred-row"><span>Nome</span><strong id="cred-name">—</strong></div>
+      <div class="cred-row"><span>Login / Matrícula</span><strong id="cred-login" style="font-size:22px;letter-spacing:2px;color:var(--blue)">—</strong></div>
+      <div class="cred-row"><span>Senha padrão</span><strong id="cred-pw">1234</strong></div>
+    </div>
+    <p class="modal-info">Recomende que o aluno altere a senha no primeiro acesso.</p>
+    <div class="mf"><button class="btn-primary" onclick="closeModal('modal-credential')">Fechar</button></div>
+  </div>
+</div>
+
+<!-- Teacher credential card -->
+<div id="modal-teacher-cred" class="modal-ov hidden" onclick="closeModalOv(event,'modal-teacher-cred')">
+  <div class="modal-card">
+    <div class="mh"><h3>✅ Professor cadastrado!</h3><button class="mc-close" onclick="closeModal('modal-teacher-cred')">✕</button></div>
+    <p style="margin-bottom:16px;color:var(--g500)">Compartilhe as credenciais com o professor:</p>
+    <div class="cred-box">
+      <div class="cred-row"><span>Nome</span><strong id="tcred-name">—</strong></div>
+      <div class="cred-row"><span>Login</span><strong id="tcred-login" style="font-size:20px;letter-spacing:2px;color:var(--blue)">—</strong></div>
+      <div class="cred-row"><span>Senha padrão</span><strong id="tcred-pw">1234</strong></div>
+    </div>
+    <div class="mf"><button class="btn-primary" onclick="closeModal('modal-teacher-cred')">Fechar</button></div>
+  </div>
+</div>
+
+<!-- Add Lesson (teacher) -->
+<div id="modal-add-lesson" class="modal-ov hidden" onclick="closeModalOv(event,'modal-add-lesson')">
+  <div class="modal-card modal-wide">
+    <div class="mh"><h3>Agendar Nova Aula</h3><button class="mc-close" onclick="closeModal('modal-add-lesson')">✕</button></div>
+    <div class="field-group"><label>Aluno *</label><select id="al-student"><option value="">Selecione o aluno...</option></select></div>
+    <div class="field-row">
+      <div class="field-group"><label>Data *</label><input id="al-date" type="date"></div>
+      <div class="field-group"><label>Horário *</label><input id="al-time" type="time"></div>
+    </div>
+    <div class="field-group"><label>Assunto da aula *</label><input id="al-subject" type="text" placeholder="Ex: Present Perfect, Business Vocabulary, Listening Practice…"></div>
+    <div class="field-group"><label>Tópico / descrição adicional</label><input id="al-topic" type="text" placeholder="Detalhes, exercícios, objetivos..."></div>
+    <div class="field-row">
+      <div class="field-group"><label>Duração</label><select id="al-duration"><option value="60">1 hora</option><option value="90">1h30</option><option value="120">2 horas</option></select></div>
+      <div class="field-group"><label>Link Google Meet</label><input id="al-meet" type="url" placeholder="https://meet.google.com/xxx-xxxx-xxx"></div>
+    </div>
+    <div class="mf"><button class="btn-secondary" onclick="closeModal('modal-add-lesson')">Cancelar</button><button class="btn-primary" onclick="teacherAddLesson()">Agendar</button></div>
+  </div>
+</div>
+
+<!-- Add Note (teacher, inline per-student) -->
+<div id="modal-add-note" class="modal-ov hidden" onclick="closeModalOv(event,'modal-add-note')">
+  <div class="modal-card">
+    <div class="mh"><h3>Adicionar Anotação</h3><button class="mc-close" onclick="closeModal('modal-add-note')">✕</button></div>
+    <input type="hidden" id="an-mat">
+    <div class="field-group"><label>Anotação *</label><textarea id="an-text" rows="4" placeholder="Ex: Aluno evoluiu bastante nos phrasal verbs…"></textarea></div>
+    <div class="mf"><button class="btn-secondary" onclick="closeModal('modal-add-note')">Cancelar</button><button class="btn-primary" onclick="teacherAddNote()">Salvar</button></div>
+  </div>
+</div>
+
+<!-- Reset pw modal (admin inline table) -->
+<div id="modal-reset-pw" class="modal-ov hidden" onclick="closeModalOv(event,'modal-reset-pw')">
+  <div class="modal-card">
+    <div class="mh"><h3>Redefinir Senha</h3><button class="mc-close" onclick="closeModal('modal-reset-pw')">✕</button></div>
+    <p id="rp-user-label" style="margin-bottom:16px;color:var(--g600)"></p>
+    <input type="hidden" id="rp-login">
+    <div class="field-group"><label>Nova senha *</label><input id="rp-pw" type="text" placeholder="Mínimo 4 caracteres"></div>
+    <div class="mf"><button class="btn-secondary" onclick="closeModal('modal-reset-pw')">Cancelar</button><button class="btn-primary" onclick="submitResetPw()">Salvar</button></div>
+  </div>
+</div>
+
+<!-- Delete confirm -->
+<div id="modal-confirm" class="modal-ov hidden" onclick="closeModalOv(event,'modal-confirm')">
+  <div class="modal-card">
+    <div class="mh"><h3>⚠️ Confirmar exclusão</h3><button class="mc-close" onclick="closeModal('modal-confirm')">✕</button></div>
+    <p id="confirm-msg" style="margin-bottom:20px;color:var(--g600)"></p>
+    <div class="mf"><button class="btn-secondary" onclick="closeModal('modal-confirm')">Cancelar</button><button class="btn-danger" id="confirm-btn">Excluir</button></div>
+  </div>
+</div>
+
+<!-- ═══════ Modal: Gerar Certificado (teacher) ═══════ -->
+<div id="modal-cert" class="modal-ov hidden" onclick="closeModalOv(event,'modal-cert')">
+  <div class="modal-card modal-wide">
+    <div class="mh"><h3>🎓 Gerar Certificado</h3><button class="mc-close" onclick="closeModal('modal-cert')">✕</button></div>
+    <div class="field-row">
+      <div class="field-group"><label>Aluno *</label><select id="cert-student"><option value="">Selecione...</option></select></div>
+      <div class="field-group"><label>Módulo / Curso *</label><input id="cert-module" type="text" placeholder="Ex: Business English, Basic English..."></div>
+    </div>
+    <div class="field-row">
+      <div class="field-group"><label>Nível atingido *</label>
+        <select id="cert-level"><option>A1</option><option>A2</option><option>B1</option><option selected>B2</option><option>C1</option><option>C2</option></select>
+      </div>
+      <div class="field-group"><label>Carga horária (horas) *</label><input id="cert-hours" type="number" placeholder="Ex: 40"></div>
+    </div>
+    <div class="field-row">
+      <div class="field-group"><label>Período *</label><input id="cert-period" type="text" placeholder="Ex: Janeiro a Junho de 2025"></div>
+      <div class="field-group"><label>Local de emissão</label><input id="cert-location" type="text" placeholder="Ex: Rio de Janeiro, RJ"></div>
+    </div>
+    <!-- Teacher signature canvas -->
+    <div class="field-group">
+      <label>Assinatura do Professor <span style="color:var(--g400);font-weight:400">(assine abaixo com o mouse ou dedo)</span></label>
+      <div class="sig-wrap">
+        <canvas id="sig-teacher" class="sig-canvas" width="540" height="120"></canvas>
+        <button type="button" class="sig-clear" onclick="clearSig('sig-teacher')">Limpar</button>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn-secondary" onclick="closeModal('modal-cert')">Cancelar</button>
+      <button class="btn-secondary" onclick="previewCert()">👁 Pré-visualizar</button>
+      <button class="btn-primary" onclick="issueCert()">✅ Emitir Certificado</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ Modal: Assinatura do Aluno ═══════ -->
+<div id="modal-student-sign" class="modal-ov hidden" onclick="closeModalOv(event,'modal-student-sign')">
+  <div class="modal-card">
+    <div class="mh"><h3>✍️ Assinar Certificado</h3><button class="mc-close" onclick="closeModal('modal-student-sign')">✕</button></div>
+    <p style="margin-bottom:16px;color:var(--g600);font-size:14px">Assine abaixo para finalizar seu certificado e liberar o download.</p>
+    <input type="hidden" id="sign-cert-id">
+    <div class="field-group">
+      <label>Sua assinatura <span style="color:var(--g400);font-weight:400">(assine com o mouse ou dedo)</span></label>
+      <div class="sig-wrap">
+        <canvas id="sig-student" class="sig-canvas" width="380" height="120"></canvas>
+        <button type="button" class="sig-clear" onclick="clearSig('sig-student')">Limpar</button>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn-secondary" onclick="closeModal('modal-student-sign')">Cancelar</button>
+      <button class="btn-primary" onclick="submitStudentSign()">✅ Confirmar Assinatura</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ Modal: Preview PDF ═══════ -->
+<div id="modal-pdf-preview" class="modal-ov hidden" onclick="closeModalOv(event,'modal-pdf-preview')">
+  <div class="modal-card" style="max-width:860px;width:95vw">
+    <div class="mh"><h3>Pré-visualização do Certificado</h3><button class="mc-close" onclick="closeModal('modal-pdf-preview')">✕</button></div>
+    <iframe id="pdf-preview-frame" style="width:100%;height:500px;border:1px solid var(--g200);border-radius:var(--r-sm)"></iframe>
+    <div class="mf"><button class="btn-primary" onclick="closeModal('modal-pdf-preview')">Fechar</button></div>
+  </div>
+</div>
+
+<!-- ═══════ Modal: Feedback de Aula (teacher) ═══════ -->
+<div id="modal-feedback" class="modal-ov hidden" onclick="closeModalOv(event,'modal-feedback')">
+  <div class="modal-card">
+    <div class="mh"><h3>✅ Concluir Aula</h3><button class="mc-close" onclick="closeModal('modal-feedback')">✕</button></div>
+    <p style="margin-bottom:16px;color:var(--g600);font-size:14px">Aula: <strong id="fb-topic"></strong></p>
+    <div class="field-group">
+      <label>Resumo / Feedback da aula *</label>
+      <textarea id="fb-feedback" rows="4" placeholder="Ex: Trabalhamos Present Perfect com foco em experiências de vida. O aluno demonstrou boa compreensão e participação ativa..."></textarea>
+    </div>
+    <div class="field-group">
+      <label>Tarefa de casa (opcional)</label>
+      <textarea id="fb-homework" rows="2" placeholder="Ex: Exercícios 3 e 4 da página 52, praticar os verbos irregulares..."></textarea>
+    </div>
+    <div class="mf">
+      <button class="btn-secondary" onclick="closeModal('modal-feedback')">Cancelar</button>
+      <button class="btn-primary" onclick="submitFeedback()">✅ Salvar e Concluir</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast hidden"></div>
+
+<script src="/app.js"></script>
+</body>
+</html>
